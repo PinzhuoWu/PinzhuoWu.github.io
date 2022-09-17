@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-big-counter.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Hadoop伪分布式安装">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop伪分布式安装">
+<meta property="og:url" content="http://example.com/2022/09/09/Hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="PinzhuoWu&#39;Blog">
+<meta property="og:description" content="Hadoop伪分布式安装">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101038778.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101341159.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101425163.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101505482.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101712955.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101724442.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101940927.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101950523.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101956606.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220914113607931.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909102748067.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909102756724.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220914111412071.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103054860.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103308737.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103357350.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103451516.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103713415.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103749795.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103958263.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909104032732.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909104116680.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909104344158.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185054194.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185158965.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185257492.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185419256.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185559446.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185631509.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185727483.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185738927.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185856754.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185935213.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185956318.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190034777.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190111940.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190200813.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190222745.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190321709.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190342785.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190441205.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190532353.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190559956.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190615874.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190642645.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190758080.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190825377.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190859305.png">
+<meta property="og:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913191052064.png">
+<meta property="article:published_time" content="2022-09-09T01:04:05.995Z">
+<meta property="article:modified_time" content="2022-09-17T06:04:07.204Z">
+<meta property="article:author" content="Pinzhuo Wu">
+<meta property="article:tag" content="大数据">
+<meta property="article:tag" content="Hadoop">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101038778.png">
+
+<link rel="canonical" href="http://example.com/2022/09/09/Hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%89%E8%A3%85/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Hadoop伪分布式安装 | PinzhuoWu'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">PinzhuoWu'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录学习过程</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="comment fa-fw"></i>guestbook</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/09/Hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Pinzhuo Wu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PinzhuoWu'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hadoop伪分布式安装
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-09-09 09:04:05" itemprop="dateCreated datePublished" datetime="2022-09-09T09:04:05+08:00">2022-09-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-17 14:04:07" itemprop="dateModified" datetime="2022-09-17T14:04:07+08:00">2022-09-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hadoop/" itemprop="url" rel="index"><span itemprop="name">Hadoop</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Hadoop伪分布式安装</p>
+<span id="more"></span>
+
+<h1 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h1><h3 id="1-安装vim"><a href="#1-安装vim" class="headerlink" title="1.安装vim"></a>1.安装vim</h3><p>​	<code>sudo apt install vim</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101038778.png" alt="image-20220909101038778"></p>
+<p>配置vim</p>
+<p>打开~&#x2F;.vimrc，添加以下内容</p>
+<blockquote>
+<p>set autoindent</p>
+</blockquote>
+<blockquote>
+<p>set cindent</p>
+</blockquote>
+<blockquote>
+<p>set tabstop&#x3D;4</p>
+</blockquote>
+<blockquote>
+<p>set expandtab</p>
+</blockquote>
+<blockquote>
+<p>set softtabstop&#x3D;4</p>
+</blockquote>
+<blockquote>
+<p>set shiftwidth&#x3D;4</p>
+</blockquote>
+<blockquote>
+<p>set hlsearch</p>
+</blockquote>
+<blockquote>
+<p>set incsearch</p>
+</blockquote>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101341159.png" alt="image-20220909101341159"></p>
+<h3 id="2-安装SSH服务端"><a href="#2-安装SSH服务端" class="headerlink" title="2.安装SSH服务端"></a>2.安装SSH服务端</h3><p>由于集群中主机进行分布式计算需要相互进行数据通信，服务器之间的连接需要通过SSH进行，所以需要安装SSH服务。</p>
+<p>SSH（Secure Shell）是一套远程传输通信协议，用于实现两台机器之间的安全登录以及数据传送，其保证数据安全的原理是<strong>非对称加密</strong>。</p>
+<p>Ubuntu缺省已经安装了SSH 客户端，这里只需安装服务端</p>
+<p><code>sudo apt install openssh-server</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101425163.png" alt="image-20220909101425163"></p>
+<p>安装以后，SSH服务端会自动开启，执行以下命令查看服务状态</p>
+<p><code>sudo service ssh status</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101505482.png" alt="image-20220909101505482"></p>
+<p>如果服务没有开启，可以执行下面的命令开启服务</p>
+<p><code>sudo service ssh start </code></p>
+<h3 id="3-配置SSH免密码登录"><a href="#3-配置SSH免密码登录" class="headerlink" title="3.配置SSH免密码登录"></a>3.配置SSH免密码登录</h3><p>默认通过SSH登录服务器需要输入用户名和密码，如果Hadoop每次都通过输入密码访问节点将非常麻烦，所以需要设置使用公钥登录。所谓“公钥登录“，就是用户将自己的公钥储存在远程主机上。登录的时候，远程主机会向用户发送一段随机字符串，用户用自己的私钥加密后，再发回来。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录shell，不再要求密码。</p>
+<p>执行以下命令，生成公钥和私钥对，-t选项用于指定加密算法类型，比如RSA、ECDSA或DSA等。</p>
+<p><code>ssh-keygen -t rsa</code></p>
+<p>此时会有多处提醒在冒号后输入文本，主要是要求输入SSH密码以及密码的放置位置。只需要使用默认值，按回车即可。</p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101712955.png" alt="image-20220909101712955"></p>
+<p>此时SSH公钥和私钥已经生成完毕，且放置在<del>&#x2F;.ssh目录下。切换到</del>&#x2F;.ssh目录下可以看到有两个文件：id_rsa和id_rsa.pub，分别存储私钥和公钥。</p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101724442.png" alt="image-20220909101724442"></p>
+<p>在~&#x2F;.ssh目录下，创建一个名为authorized_keys的文本文件</p>
+<p><code>touch ~/.ssh/authorized_keys</code></p>
+<p>将公钥文件id_rsa.pub里的内容，追加到authorized_keys中</p>
+<p><code>cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101940927.png" alt="image-20220909101940927"></p>
+<p>执行ssh localhost测试公钥登录配置是否正确</p>
+<p><code>ssh localhost </code></p>
+<p>第一次使用ssh访问，会提醒是否继续连接，输入“yes”继续进行，如果没有提示输入密码，则证明免密码登录成功，执行完以后执行exit退出。</p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101950523.png" alt="image-20220909101950523"></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909101956606.png" alt="image-20220909101956606"></p>
+<p>后续再执行ssh localhost时，就不用输入密码了。</p>
+<h2 id="4-账号设置"><a href="#4-账号设置" class="headerlink" title="4.账号设置"></a>4.账号设置</h2><p>为了后面操作方便，将自己的Linux系统账号提升为管理员（系统安装时设置的账号默认具有管理员权限，无需操作），例如，下面将账号lei设置为管理员。</p>
+<p><code>sudo usermod -aG sudo pzwu</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220914113607931.png" alt="image-20220914113607931"></p>
+<h1 id="二、Hadoop伪分布式安装"><a href="#二、Hadoop伪分布式安装" class="headerlink" title="二、Hadoop伪分布式安装"></a>二、Hadoop伪分布式安装</h1><h3 id="1-新建安装目录"><a href="#1-新建安装目录" class="headerlink" title="1.新建安装目录"></a>1.新建安装目录</h3><p>首先来创建两个目录，用于存放安装程序及数据。两个目录的作用分别为：</p>
+<ul>
+<li><p>&#x2F;apps目录用来存放安装的框架</p>
+</li>
+<li><p>&#x2F;data目录用来存放临时数据、HDFS数据、程序代码或脚本。</p>
+<p><code>sudo mkdir /apps </code></p>
+<p><code>sudo mkdir /data</code></p>
+</li>
+</ul>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909102748067.png" alt="image-20220909102748067"></p>
+<p>并将两个目录的所有者及所属组从root改为我们自己的账户pzwu</p>
+<p><code>sudo chown -R lei:lei /apps</code></p>
+<p><code>sudo chown -R lei:lei /data</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909102756724.png" alt="image-20220909102756724"></p>
+<p>切换到根目录下，执行 ls -l 命令验证是否创建成功</p>
+<p><code>ls -l</code></p>
+<p>可以看到根目录下&#x2F;apps和&#x2F;data目录所有者及所属组已切换为pzwu:pzwu</p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220914111412071.png" alt="image-20220914111412071"></p>
+<h3 id="2-复制安装包"><a href="#2-复制安装包" class="headerlink" title="2.复制安装包"></a>2.复制安装包</h3><p>复制需要的安装包到&#x2F;apps目录下，如jdk（Java Development Kit ）安装包jdk-8u191-linux-x64.tar.gz及Hadoop安装包hadoop-3.0.0.tar.gz。假设安装包已经下载到家目录的big_data_tools（需要自己创建）目录下</p>
+<p><code>cp ~/big_data_tools/hadoop-3.0.0.tar.gz /apps/</code></p>
+<p><code>cp ~/big_data_tools/jdk-8u191-linux-x64.tar.gz /apps/</code></p>
+<h3 id="3-安装jdk"><a href="#3-安装jdk" class="headerlink" title="3.安装jdk"></a>3.安装jdk</h3><p>进入目录&#x2F;apps，并解压jdk-8u191-linux-x64.tar.gz。</p>
+<p><code>cd /apps</code></p>
+<p><code>tar zxvf jdk-8u191-linux-x64.tar.gz</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103054860.png" alt="image-20220909103054860"></p>
+<p>确认一下解压是否有报错，如果有报错信息，需要检查一下压缩文件的完整性。将jdk1.8.0_191目录重命名为java</p>
+<p><code>mv /apps/jdk1.8.0_191/ /apps/java</code></p>
+<p>删除压缩包</p>
+<p><code>rm /apps/jdk-8u191-linux-x64.tar.gz</code></p>
+<p> 用vim打开用户个性化配置文件</p>
+<p><code>vim ~/.bashrc</code></p>
+<p>配置环境变量，在文件末尾添加Java环境变量，保存退出。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Java  </span><br><span class="line">export JAVA_HOME=/apps/java  </span><br><span class="line">export PATH=$JAVA_HOME/bin:$PATH </span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103308737.png" alt="image-20220909103308737"></p>
+<p>执行source命令让环境变量生效。</p>
+<p><code>source ~/.bashrc </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103357350.png" alt="image-20220909103357350"></p>
+<p>测试环境变量，</p>
+<p><code>java -version</code></p>
+<p>出现如下，显示Java的版本号，则说明安装正确。</p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103451516.png" alt="image-20220909103451516"></p>
+<h3 id="4-安装Hadoop"><a href="#4-安装Hadoop" class="headerlink" title="4.安装Hadoop"></a>4.安装Hadoop</h3><p>进入目录&#x2F;apps，解压hadoop-3.0.0.tar.gz</p>
+<p><code>cd /apps</code></p>
+<p><code>tar zxvf hadoop-3.0.0.tar.gz</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103713415.png" alt="image-20220909103713415"></p>
+<p>将hadoop-3.0.0重命名为hadoop。</p>
+<p><code>mv /apps/hadoop-3.0.0/ /apps/hadoop </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103749795.png" alt="image-20220909103749795"></p>
+<p>将Hadoop的路径添加到环境变量。打开用户个性化配置文件</p>
+<p><code>vim ~/.bashrc </code></p>
+<p>将以下内容追加到文件末尾。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Hadoop  </span><br><span class="line">export HADOOP_HOME=/apps/hadoop  </span><br><span class="line">export PATH=$HADOOP_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909103958263.png" alt="image-20220909103958263"></p>
+<p>使环境变量生效</p>
+<p><code>source ~/.bashrc </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909104032732.png" alt="image-20220909104032732"></p>
+<p>验证hadoop环境变量是否正确，出现如下Hadoop版本，表示配置正确</p>
+<p><code>hadoop version</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909104116680.png" alt="image-20220909104116680"></p>
+<p>至此，单机Hadoop安装完成</p>
+<h3 id="5-实现伪分布式"><a href="#5-实现伪分布式" class="headerlink" title="5.实现伪分布式"></a>5.实现伪分布式</h3><p>接下来对Hadoop进行配置，以实现伪分布式。伪分布式是在一台机器上模拟一个只有一个节点的集群。</p>
+<p>首先切换到Hadoop配置目录下。</p>
+<p><code>cd /apps/hadoop/etc/hadoop</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220909104344158.png" alt="image-20220909104344158"></p>
+<h5 id="1-修改配置文件hadoop-env-sh"><a href="#1-修改配置文件hadoop-env-sh" class="headerlink" title="(1) 修改配置文件hadoop-env.sh"></a>(1) 修改配置文件hadoop-env.sh</h5><p><code>vim hadoop-env.sh </code></p>
+<p>去掉54行的注释，并修改为</p>
+<p><code>export JAVA_HOME=/apps/java</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185054194.png" alt="image-20220913185054194"></p>
+<h5 id="5-修改配置文件core-site-xml"><a href="#5-修改配置文件core-site-xml" class="headerlink" title="(5) 修改配置文件core-site.xml"></a>(5) 修改配置文件core-site.xml</h5><p><code>vim core-site.xml </code></p>
+<p> 添加下面配置到<configuration>与</configuration>标签之间</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;         </span><br><span class="line">    &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;         </span><br><span class="line">    &lt;value&gt;/data/tmp/hadoop/tmp&lt;/value&gt;     </span><br><span class="line">&lt;/property&gt; </span><br><span class="line"> </span><br><span class="line">&lt;property&gt;         </span><br><span class="line">    &lt;name&gt;fs.defaultFS&lt;/name&gt;         </span><br><span class="line">    &lt;value&gt;hdfs://localhost:9000&lt;/value&gt;     </span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185158965.png" alt="image-20220913185158965"></p>
+<p>两项配置</p>
+<ul>
+<li>hadoop.tmp.dir，配置Hadoop处理过程中，临时文件的存储位置。这里的目录&#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;tmp需要自己创建。</li>
+</ul>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185257492.png" alt="image-20220913185257492"></p>
+<ul>
+<li>fs.defaultFS，配置HDFS文件系统的地址和端口。</li>
+</ul>
+<h5 id="（3）修改配置文件hdfs-site-xml"><a href="#（3）修改配置文件hdfs-site-xml" class="headerlink" title="（3）修改配置文件hdfs-site.xml"></a>（3）修改配置文件hdfs-site.xml</h5><p><code>vim hdfs-site.xml </code></p>
+<p>添加下面配置到<configuration>与</configuration>标签之间。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;        </span><br><span class="line">    &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;        </span><br><span class="line">    &lt;value&gt;/data/tmp/hadoop/hdfs/name&lt;/value&gt;    </span><br><span class="line">&lt;/property&gt; </span><br><span class="line">    </span><br><span class="line">&lt;property&gt;         </span><br><span class="line">    &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;         </span><br><span class="line">    &lt;value&gt;/data/tmp/hadoop/hdfs/data&lt;/value&gt;     </span><br><span class="line">&lt;/property&gt;</span><br><span class="line"> </span><br><span class="line">&lt;property&gt;         </span><br><span class="line">    &lt;name&gt;dfs.replication&lt;/name&gt;         </span><br><span class="line">    &lt;value&gt;1&lt;/value&gt;     </span><br><span class="line">&lt;/property&gt;</span><br><span class="line"> </span><br><span class="line">&lt;property&gt;         </span><br><span class="line">    &lt;name&gt;dfs.permissions.enabled&lt;/name&gt;         </span><br><span class="line">    &lt;value&gt;false&lt;/value&gt;     </span><br><span class="line">&lt;/property&gt;   </span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185419256.png" alt="image-20220913185419256"></p>
+<p>配置项说明：</p>
+<p>dfs.namenode.name.dir，配置NameNode元数据存储位置；</p>
+<p>dfs.datanode.data.dir，配置DataNode元数据存储位置；</p>
+<p>dfs.replication，配置每份数据备份数，由于目前我们使用1台节点，所以，设置为1，如果设置为2的话，运行会报错。</p>
+<p>dfs.permissions.enabled，配置hdfs是否启用权限认证，我们选择否。</p>
+<p>另外&#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;hdfs目录，需要自己创建</p>
+<p><code>mkdir -p /data/tmp/hadoop/hdfs </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185559446.png" alt="image-20220913185559446"></p>
+<h5 id="4-修改配置文件workers"><a href="#4-修改配置文件workers" class="headerlink" title="(4) 修改配置文件workers"></a>(4) 修改配置文件workers</h5><p><code>vim workers</code></p>
+<p>将集群中slave角色的节点的主机名，添加进workers文件中。目前只有一台节点，所以workers文件内容为：</p>
+<blockquote>
+<p>localhost </p>
+</blockquote>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185631509.png" alt="image-20220913185631509"></p>
+<p>无需配置</p>
+<h3 id="6-格式化HDFS"><a href="#6-格式化HDFS" class="headerlink" title="6.格式化HDFS"></a>6.格式化HDFS</h3><p>格式化HDFS文件系统。执行：</p>
+<p><code>hadoop namenode -format </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185727483.png" alt="image-20220913185727483"></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185738927.png" alt="image-20220913185738927"></p>
+<p>如果没有报错，说明格式化成功。</p>
+<p>注：警告无&#x2F;apps&#x2F;hadoop&#x2F;logs 自动创建该文件</p>
+<h3 id="7-测试HDFS"><a href="#7-测试HDFS" class="headerlink" title="7.测试HDFS"></a>7.测试HDFS</h3><p>切换目录到&#x2F;apps&#x2F;hadoop&#x2F;sbin目录下，启动Hadoop的hdfs相关进程。</p>
+<p><code>cd /apps/hadoop/sbin/</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185856754.png" alt="image-20220913185856754"></p>
+<p><code>./start-dfs.sh </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185935213.png" alt="image-20220913185935213"></p>
+<p>这里只会启动HDFS相关进程。</p>
+<p>输入jps查看HDFS相关进程是否已经启动。</p>
+<p><code>jps</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913185956318.png" alt="image-20220913185956318"></p>
+<p>可以看到启动了三个进程NameNode, DataNode和SecondaryNameNode。</p>
+<p>注：jps（Java Virtual Machine Process Status Tool）是java提供的一个显示当前所有java进程pid的命令。</p>
+<p>进一步验证HDFS运行状态。先在HDFS上创建一个目录。</p>
+<p><code>hadoop fs -mkdir /myhadoop</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190034777.png" alt="image-20220913190034777"></p>
+<p>执行下面命令，查看目录是否创建成功。</p>
+<p><code>hadoop fs -ls / </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190111940.png" alt="image-20220913190111940"></p>
+<h3 id="8-配置MapReduce"><a href="#8-配置MapReduce" class="headerlink" title="8.配置MapReduce"></a>8.配置MapReduce</h3><p>再次切换到Hadoop配置文件目录</p>
+<p><code>cd /apps/hadoop/etc/hadoop </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190200813.png" alt="image-20220913190200813"></p>
+<h5 id="1-修改配置文件mapred-site-xml"><a href="#1-修改配置文件mapred-site-xml" class="headerlink" title="(1) 修改配置文件mapred-site.xml"></a>(1) 修改配置文件mapred-site.xml</h5><p><code>vim mapred-site.xml </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190222745.png" alt="image-20220913190222745"></p>
+<p>将mapreduce相关配置，添加到<configuration>标签之间。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;         </span><br><span class="line">    &lt;name&gt;mapreduce.framework.name&lt;/name&gt;         </span><br><span class="line">    &lt;value&gt;yarn&lt;/value&gt;     </span><br><span class="line">&lt;/property&gt;     </span><br><span class="line">&lt;property&gt;</span><br><span class="line">    &lt;name&gt;yarn.application.classpath&lt;/name&gt;</span><br><span class="line">    &lt;value&gt;/apps/hadoop/etc/hadoop:/apps/hadoop/share/hadoop/common/lib/*:/apps/hadoop/share/hadoop/common/*:/apps/hadoop/share/hadoop/hdfs:/apps/hadoop/share/hadoop/hdfs/lib/*:/apps/hadoop/share/hadoop/hdfs/*:/apps/hadoop/share/hadoop/mapreduce/*:/apps/hadoop/share/hadoop/yarn:/apps/hadoop/share/hadoop/yarn/lib/*:/apps/hadoop/share/hadoop/yarn/*&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190321709.png" alt="image-20220913190321709"></p>
+<p>这里指定mapreduce任务处理所使用的框架。</p>
+<h5 id="2-修改配置文件yarn-site-xml"><a href="#2-修改配置文件yarn-site-xml" class="headerlink" title="(2) 修改配置文件yarn-site.xml"></a>(2) 修改配置文件yarn-site.xml</h5><p><code>vim yarn-site.xml</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190342785.png" alt="image-20220913190342785"></p>
+<p>将yarn相关配置，添加到<configuration>标签之间</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;        </span><br><span class="line">    &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;        </span><br><span class="line">    &lt;value&gt;mapreduce_shuffle&lt;/value&gt;    </span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190441205.png" alt="image-20220913190441205"></p>
+<p>配置NodeManager上运行的附属服务。需配置成mapreduce_shuffle，才可运行MapReduce程序。</p>
+<p>启动计算层面相关进程，切换到Hadoop启动目录，执行以下命令启动Yarn。</p>
+<p><code>cd /apps/hadoop/sbin/ </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190532353.png" alt="image-20220913190532353"></p>
+<p><code>./start-yarn.sh </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190559956.png" alt="image-20220913190559956"></p>
+<p>输入jps，查看当前运行的进程，多了ResourceManager和NodeManager，算上jps，一共六个进程。</p>
+<p><code>jps</code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190615874.png" alt="image-20220913190615874"></p>
+<h3 id="9-执行测试"><a href="#9-执行测试" class="headerlink" title="9.执行测试"></a>9.执行测试</h3><p>切换到&#x2F;apps&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;mapreduce目录下。</p>
+<p><code>cd /apps/hadoop/share/hadoop/mapreduce </code></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190642645.png" alt="image-20220913190642645"></p>
+<p>在该目录下跑一个mapreduce程序，来检测一下Hadoop是否能正常运行。</p>
+<p><code>在该目录下跑一个mapreduce程序，来检测一下Hadoop是否能正常运行。</code></p>
+<p>这个程序是计算数学中的pi值。没有报错，表示程序已正常运行，Hadoop已正确安装的。</p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190758080.png" alt="image-20220913190758080"></p>
+<h1 id="三、Web界面"><a href="#三、Web界面" class="headerlink" title="三、Web界面"></a>三、Web界面</h1><h3 id="1-Hadoop-Web界面"><a href="#1-Hadoop-Web界面" class="headerlink" title="1.Hadoop Web界面"></a>1.Hadoop Web界面</h3><p>在浏览器中访问<a target="_blank" rel="noopener" href="http://localhost:8088/">http://localhost:8088</a> 可以查看Hadoop集群，节点及任务相关信息。</p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190825377.png" alt="image-20220913190825377"></p>
+<h3 id="2-HDFS-Web界面"><a href="#2-HDFS-Web界面" class="headerlink" title="2.HDFS Web界面"></a>2.HDFS Web界面</h3><p>在浏览器中访问<a target="_blank" rel="noopener" href="http://localhost:8088/">http://localhost:8088</a> 可以查看Hadoop集群，节点及任务相关信息。</p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913190859305.png" alt="image-20220913190859305"></p>
+<p><img src="C:\Users\14527\AppData\Roaming\Typora\typora-user-images\image-20220913191052064.png" alt="image-20220913191052064"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Pinzhuo Wu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2022/09/09/Hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%89%E8%A3%85/" title="Hadoop伪分布式安装">http://example.com/2022/09/09/Hadoop伪分布式安装/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag"># 大数据</a>
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/09/16/%E5%9F%BA%E4%BA%8Egithub%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/" rel="next" title="基于Github搭建hexo博客">
+      基于Github搭建hexo博客 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">一、准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85vim"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.安装vim</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85SSH%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="nav-number">1.0.2.</span> <span class="nav-text">2.安装SSH服务端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AESSH%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95"><span class="nav-number">1.0.3.</span> <span class="nav-text">3.配置SSH免密码登录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E8%B4%A6%E5%8F%B7%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.1.</span> <span class="nav-text">4.账号设置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">二、Hadoop伪分布式安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%96%B0%E5%BB%BA%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95"><span class="nav-number">2.0.1.</span> <span class="nav-text">1.新建安装目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%8D%E5%88%B6%E5%AE%89%E8%A3%85%E5%8C%85"><span class="nav-number">2.0.2.</span> <span class="nav-text">2.复制安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AE%89%E8%A3%85jdk"><span class="nav-number">2.0.3.</span> <span class="nav-text">3.安装jdk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%89%E8%A3%85Hadoop"><span class="nav-number">2.0.4.</span> <span class="nav-text">4.安装Hadoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E7%8E%B0%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F"><span class="nav-number">2.0.5.</span> <span class="nav-text">5.实现伪分布式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6hadoop-env-sh"><span class="nav-number">2.0.5.0.1.</span> <span class="nav-text">(1) 修改配置文件hadoop-env.sh</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6core-site-xml"><span class="nav-number">2.0.5.0.2.</span> <span class="nav-text">(5) 修改配置文件core-site.xml</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6hdfs-site-xml"><span class="nav-number">2.0.5.0.3.</span> <span class="nav-text">（3）修改配置文件hdfs-site.xml</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6workers"><span class="nav-number">2.0.5.0.4.</span> <span class="nav-text">(4) 修改配置文件workers</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%A0%BC%E5%BC%8F%E5%8C%96HDFS"><span class="nav-number">2.0.6.</span> <span class="nav-text">6.格式化HDFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E6%B5%8B%E8%AF%95HDFS"><span class="nav-number">2.0.7.</span> <span class="nav-text">7.测试HDFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E9%85%8D%E7%BD%AEMapReduce"><span class="nav-number">2.0.8.</span> <span class="nav-text">8.配置MapReduce</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6mapred-site-xml"><span class="nav-number">2.0.8.0.1.</span> <span class="nav-text">(1) 修改配置文件mapred-site.xml</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6yarn-site-xml"><span class="nav-number">2.0.8.0.2.</span> <span class="nav-text">(2) 修改配置文件yarn-site.xml</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-%E6%89%A7%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="nav-number">2.0.9.</span> <span class="nav-text">9.执行测试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81Web%E7%95%8C%E9%9D%A2"><span class="nav-number">3.</span> <span class="nav-text">三、Web界面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Hadoop-Web%E7%95%8C%E9%9D%A2"><span class="nav-number">3.0.1.</span> <span class="nav-text">1.Hadoop Web界面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-HDFS-Web%E7%95%8C%E9%9D%A2"><span class="nav-number">3.0.2.</span> <span class="nav-text">2.HDFS Web界面</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Pinzhuo Wu"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Pinzhuo Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/PinzhuoWu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;PinzhuoWu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1452756537@qq.com" title="E-Mail → mailto:1452756537@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+	<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1478636&auto=1&height=66"></iframe>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PinzhuoWu</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">7k</span>
+
+
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
