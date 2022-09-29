@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-big-counter.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Hadoop框架是用Java语言写的，也就是说，Hadoop框架中运行的所有应用程序都要用Java语言来写才能正常地在Hadoop集群中运行。如果不会Java语言怎么办？Hadoop提供了Hadoop Streaming这个编程工具，它允许用户使用任何可执行文件或者脚本文件作为Mapper和Reducer，因此我们可以选择自己熟悉的编程语言，编写Mapper和Reducer程序来使用Hadoop集">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop Streaming">
+<meta property="og:url" content="http://example.com/2022/09/29/Hadoop%20Streaming/index.html">
+<meta property="og:site_name" content="PinzhuoWu&#39;Blog">
+<meta property="og:description" content="Hadoop框架是用Java语言写的，也就是说，Hadoop框架中运行的所有应用程序都要用Java语言来写才能正常地在Hadoop集群中运行。如果不会Java语言怎么办？Hadoop提供了Hadoop Streaming这个编程工具，它允许用户使用任何可执行文件或者脚本文件作为Mapper和Reducer，因此我们可以选择自己熟悉的编程语言，编写Mapper和Reducer程序来使用Hadoop集">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/cSxjPC2bNthIGHa.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/hC874A1l2vZaipx.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/23/txieEOF3gojW4mR.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/JiSUjNaROQbAx4m.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/8P7YEVDKX9IdGTZ.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/GL6buPlw4sdhxaR.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/9trLvdSch3DsXzV.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/pobBH1FyC753jmg.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/s1a4ZDK2NEeHhzp.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/tGzUVJfXFLCnqhk.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/tmh4Rg2I3Ac6K5G.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/P3w5XslRBJMZNGS.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/OvK8CDgwc53F7Wf.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/as74WkwtMUPxKyD.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/kpP8JDfn2ohWdir.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/6U2dhq5EgMIwzyR.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/wqbLgaIlVAkJYo7.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/WMXey9JL7HbdFln.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/KfBLYT32jMsag9u.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/Q6kJ9qi2tGa8Nl5.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/FeQI1aSAzxTVg5n.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/U8N7Zd4GhqmYsF3.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/MZsNibm4pOIuzJl.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/6i9nRphLZAtaQlu.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/St9cJaIKiyOHjGs.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/cQSdGZVHgqxznAY.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/izchSrGTo15IQ4B.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/PwdQmiy9bVtk4qN.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/8Ka5wtoQfZcHNsO.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/JINifQMpG9mdR5j.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/xpmg8CNWHdYLwXb.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/iO2XC9Z5yGI8Yob.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/vA6a4TuKcsiXE9d.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/SpkcGJf6mwZTN5e.png">
+<meta property="og:image" content="https://s2.loli.net/2022/09/29/LHVNKpBrRbAcTvh.png">
+<meta property="article:published_time" content="2022-09-29T11:08:32.409Z">
+<meta property="article:modified_time" content="2022-09-29T11:08:19.998Z">
+<meta property="article:author" content="Pinzhuo Wu">
+<meta property="article:tag" content="大数据">
+<meta property="article:tag" content="Hadoop">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/09/29/cSxjPC2bNthIGHa.png">
+
+<link rel="canonical" href="http://example.com/2022/09/29/Hadoop%20Streaming/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Hadoop Streaming | PinzhuoWu'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">PinzhuoWu'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录学习过程</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="comment fa-fw"></i>guestbook</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/29/Hadoop%20Streaming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Pinzhuo Wu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PinzhuoWu'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hadoop Streaming
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-09-29 19:08:32 / 修改时间：19:08:19" itemprop="dateCreated datePublished" datetime="2022-09-29T19:08:32+08:00">2022-09-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Hadoop/" itemprop="url" rel="index"><span itemprop="name">Hadoop</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.5k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Hadoop框架是用Java语言写的，也就是说，Hadoop框架中运行的所有应用程序都要用Java语言来写才能正常地在Hadoop集群中运行。如果不会Java语言怎么办？Hadoop提供了Hadoop Streaming这个编程工具，它允许用户使用任何可执行文件或者脚本文件作为Mapper和Reducer，因此我们可以选择自己熟悉的编程语言，编写Mapper和Reducer程序来使用Hadoop集群。</p>
+<span id="more"></span>
+
+<h1 id="一、Hadoop-Streaming介绍"><a href="#一、Hadoop-Streaming介绍" class="headerlink" title="一、Hadoop Streaming介绍"></a>一、Hadoop Streaming介绍</h1><p>Streaming的原理是用Java实现一个包装用户程序的MapReduce程序，该程序负责调用MapReduce Java接口获取key&#x2F;value对输入，创建一个新的进程启动包装的用户程序，将数据通过管道传递给包装的用户程序处理，然后调用MapReduce Java接口将用户程序的输出切分成key&#x2F;value对输出。</p>
+<p>我们以Python语言为例，Mapper文件内容如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line"> </span><br><span class="line">for line in sys.stdin:</span><br><span class="line">    line = line.strip().split(&#x27; &#x27;)</span><br><span class="line">    for word in line:</span><br><span class="line">        if word.strip() != &quot;&quot;:</span><br><span class="line">            print(&quot;%s\t%s&quot;%(word, 1))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/cSxjPC2bNthIGHa.png" alt="image-20220929162402438"></p>
+<p>Reducer文件内容如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line"> </span><br><span class="line">current_word = None</span><br><span class="line">count_pool = []</span><br><span class="line">sum = 0</span><br><span class="line"> </span><br><span class="line">for line in sys.stdin:</span><br><span class="line">    word, val = line.strip().split(&#x27;\t&#x27;)</span><br><span class="line"> </span><br><span class="line">    if current_word == None:</span><br><span class="line">        current_word = word</span><br><span class="line"> </span><br><span class="line">    if current_word != word:</span><br><span class="line">        for count in count_pool:</span><br><span class="line">            sum += count</span><br><span class="line">        print(&quot;%s\t%s&quot; % (current_word, sum))</span><br><span class="line">        current_word = word</span><br><span class="line">        count_pool = []</span><br><span class="line">        sum = 0</span><br><span class="line"> </span><br><span class="line">    count_pool.append(int(val))</span><br><span class="line"> </span><br><span class="line">for count in count_pool:</span><br><span class="line">    sum += count</span><br><span class="line">print(&quot;%s\t%s&quot; % (current_word, str(sum))) </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/hC874A1l2vZaipx.png" alt="image-20220929162424685">将上面的代码分别保存成mapper.py和reducer.py，使用shell命令的管道功能测试Mapper和Reducer程序。命令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat testfile | python3 mapper.py | sort -t $&#x27;\t&#x27; -k 1 | python3 reducer.py</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/23/txieEOF3gojW4mR.png" alt="image-20220923091808663"></p>
+<p>将testfile作为数据传递给mapper.py处理，再将处理结果进行排序，之后再把排序结果交给reducer.py处理，testfile可以用前面测试WordCount的文件。需要注意：</p>
+<p>这里我们可以使用python3 +文件名来运行python程序，也可以在python程序首行指明解释程序然后赋予可执行权限。例如在mapper.py首行添加</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\#!/usr/bin/python3</span><br></pre></td></tr></table></figure>
+
+<p>然后添加可执行权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod u+x mapper.py</span><br></pre></td></tr></table></figure>
+
+<p>可以通过指明mapper.py文件的路径来执行，比如在当前目录下执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./mapper.py</span><br></pre></td></tr></table></figure>
+
+<p>sort为排序命令，-t表示指定分隔符，-t $’\t’表示用tab进行分隔，-k表示排序时指定的键是在分隔后的哪个field，-k 1表示按分隔符分隔后的第一个field，也即我们在mapper中打印的key&#x2F;value中的key。</p>
+<p>如果管道测试能够输出我们期望的结果，就可以将任务放到Hadoop集群上运行。命令格式如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Usage: $HADOOP_HOME/bin/hadoop jar hadoop-streaming.jar [options]</span><br></pre></td></tr></table></figure>
+
+<p>常用的参数有</p>
+<ul>
+<li><p>-input <path>：指定作业输入，path可以是文件或者目录，可以使用*通配符，-input选项可以使用多次指定多个文件或目录作为输入。</p>
+</li>
+<li><p>-output <path>：指定作业输出目录，path必须不存在，而且执行作业的用户必须有创建该目录的权限，-output只能使用一次。</p>
+</li>
+<li><p>-mapper：指定mapper可执行程序或Java类，必须指定且唯一。</p>
+</li>
+<li><p>-reducer：指定reducer可执行程序或Java类，必须指定且唯一。</p>
+</li>
+<li><p>-file, -cacheFile, -cacheArchive：分别用于向计算节点分发本地文件、HDFS文件和HDFS压缩文件。</p>
+</li>
+<li><p>-numReduceTasks：指定reducer的个数，如果设置-numReduceTasks 0或者-reducer NONE则没有reducer程序，mapper的输出直接作为整个作业的输出。</p>
+</li>
+<li><p>-jobconf &#x2F; -D NAME&#x3D;VALUE：指定作业参数，NAME是参数名，VALUE是参数值，可以指定的参数可以参考hadoop-default.xml。</p>
+</li>
+</ul>
+<p>也可以通过以下命令查看完整的命令参数介绍</p>
+<p><code>hadoop jar /apps/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.0.0.jar --help</code></p>
+<p>我们可以将上述命令写成一个shell脚本方便使用。首先将hadoop-streaming-3.0.0.jar的路径和程序输入输出路径保存成变量。其次，我们判断输出目录是否已经存在，如果存在就删除。最后是hadoop streaming 命令，在命令中我们给任务起名为“WordCount”。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">STREAMING_JAR_PATH=/apps/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.0.0.jar</span><br><span class="line"> </span><br><span class="line">INPUT_FILE_PATH=&quot;/input/wordcount/testfile&quot;</span><br><span class="line">OUTPUT_PATH=&quot;/output/streaming/wordcount&quot;</span><br><span class="line"> </span><br><span class="line">if hadoop fs -test -d $OUTPUT_PATH</span><br><span class="line">then</span><br><span class="line">    hadoop fs -rm -r -skipTrash $OUTPUT_PATH</span><br><span class="line">fi</span><br><span class="line"> </span><br><span class="line">hadoop jar $STREAMING_JAR_PATH \</span><br><span class="line">-D mapred.job.name=&quot;WordCount&quot; \</span><br><span class="line">-file ~/hadoop_streaming/wordcount/mapper.py \</span><br><span class="line">-file ~/hadoop_streaming/wordcount/reducer.py \</span><br><span class="line">-input $INPUT_FILE_PATH \</span><br><span class="line">-output $OUTPUT_PATH \</span><br><span class="line">-mapper &quot;python3 mapper.py&quot; \</span><br><span class="line">-reducer &quot;python3 reducer.py&quot;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的过程可以看出，Mapper和Reducer都是可执行文件，它们从标准输入读入数据（一行一行读）， 并把计算结果发给标准输出。Streaming工具会创建一个Map&#x2F;Reduce作业， 并把它发送给合适的集群，同时监视这个作业的整个执行过程。如果一个可执行文件被用于Mapper，则在Mapper初始化时， 每一个Mapper任务会把这个可执行文件作为一个单独的进程启动。 Mapper任务运行时，它把输入切分成行并把每一行提供给可执行文件进程的标准输入。 同时，Mapper收集可执行文件进程标准输出的内容，并把收到的每一行内容转化成key&#x2F;value对，作为Mapper的输出。 默认情况下，一行中第一个Tab之前的部分作为Key，之后的（不包括Tab）作为Value。 如果没有Tab，整行作为Key值，Value值为null。不过，这可以定制。如果一个可执行文件被用于Reducer，每个Reducer任务会把这个可执行文件作为一个单独的进程启动。 Reducer任务运行时，它把输入切分成行并把每一行提供给可执行文件进程的标准输入。 同时，Reducer收集可执行文件进程标准输出的内容，并把每一行内容转化成Key&#x2F;Value对，作为Reducer的输出。 默认情况下，一行中第一个Tab之前的部分作为Key，之后的（不包括Tab）作为Value。</p>
+<h1 id="二、中文分词"><a href="#二、中文分词" class="headerlink" title="二、中文分词"></a>二、中文分词</h1><p>使用Hadoop streaming对文本文件vehicle.txt进行中文分词，并统计词频。分词可以选用jieba分词工具。</p>
+<h6 id="1、准备jieba分词包"><a href="#1、准备jieba分词包" class="headerlink" title="1、准备jieba分词包"></a>1、准备jieba分词包</h6><p>更新可用软件包列表</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/JiSUjNaROQbAx4m.png" alt="image-20220929162334359"></p>
+<p>安装pip3</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/8P7YEVDKX9IdGTZ.png" alt="image-20220929162508248"></p>
+<p>安装jieba分词</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 install jieba</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/GL6buPlw4sdhxaR.png" alt="image-20220929162939457"></p>
+<p>进入Python3交互模式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3</span><br></pre></td></tr></table></figure>
+
+<p>导入jieba，并查看jieba安装目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import jieba</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jieba.__file__</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/9trLvdSch3DsXzV.png" alt="image-20220929163011249"></p>
+<p>可以看到jieba所在目录为&#x2F;home&#x2F;pzwu&#x2F;.local&#x2F;lib&#x2F;python3.8&#x2F;site-packages&#x2F;jieba</p>
+<p>退出Python3交互模式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exit()</span><br></pre></td></tr></table></figure>
+
+<p>复制jieba整个文件夹到~&#x2F;big_data_tools</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp -r /home/lei/.local/lib/python3.6/site-packages/jieba ~/big_data_tools/</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/pobBH1FyC753jmg.png" alt="image-20220929163131971"></p>
+<p>打包</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/big_data_tools</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar zcvf jieba.tar.gz jieba</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/s1a4ZDK2NEeHhzp.png" alt="image-20220929163244903"></p>
+<p><img src="https://s2.loli.net/2022/09/29/tGzUVJfXFLCnqhk.png" alt="image-20220929163303313"></p>
+<p>上传到hdfs</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -mkdir /py_modules</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -put jieba.tar.gz /py_modules</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/tmh4Rg2I3Ac6K5G.png" alt="image-20220929163623630"></p>
+<p>检查一下是否上传成功</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -ls /py_modules</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/P3w5XslRBJMZNGS.png" alt="image-20220929163650455"></p>
+<p>进入~&#x2F;hadoop_streaming&#x2F;wordcount</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/hadoop_streaming/wordcount</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/OvK8CDgwc53F7Wf.png" alt="image-20220929163829355"></p>
+<ul>
+<li><p><strong>创建</strong> <strong>map</strong> <strong>文件</strong></p>
+<p>新建mapper.py，写入如下内容</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/python3</span><br><span class="line">import sys</span><br><span class="line">sys.path.append(&quot;jieba&quot;) #这一行要放在import jieba 之前</span><br><span class="line">import jieba</span><br><span class="line"> </span><br><span class="line">for line in sys.stdin:</span><br><span class="line">    line = jieba.lcut(line.strip())</span><br><span class="line">    for word in line:</span><br><span class="line">        if word.strip() != &quot;&quot;:</span><br><span class="line">            print(&quot;%s\t%s&quot;%(word, 1))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/as74WkwtMUPxKyD.png" alt="image-20220929183957456"></p>
+<ul>
+<li><strong>创建recuder文件</strong></li>
+</ul>
+<p>新建reducer.py，写入如下内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/python3</span><br><span class="line">import sys</span><br><span class="line"> </span><br><span class="line">current_word = None</span><br><span class="line">count_pool = []</span><br><span class="line">sum = 0</span><br><span class="line"> </span><br><span class="line">for line in sys.stdin:</span><br><span class="line">    word, val = line.strip().split(&#x27;\t&#x27;)</span><br><span class="line"> </span><br><span class="line">    if current_word == None:</span><br><span class="line">        current_word = word</span><br><span class="line"> </span><br><span class="line">    if current_word != word:</span><br><span class="line">        for count in count_pool:</span><br><span class="line">            sum += count</span><br><span class="line">        print(&quot;%s\t%s&quot; % (current_word, sum))</span><br><span class="line">        current_word = word</span><br><span class="line">        count_pool = []</span><br><span class="line">        sum = 0</span><br><span class="line"> </span><br><span class="line">    count_pool.append(int(val))</span><br><span class="line">for count in count_pool:</span><br><span class="line">    sum += count</span><br><span class="line">print(&quot;%s\t%s&quot; % (current_word, str(sum)))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/kpP8JDfn2ohWdir.png" alt="image-20220929184048416"></p>
+<ul>
+<li><strong>创建执行脚本文件</strong></li>
+</ul>
+<p>新建脚本文件run.sh，写入如下内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"> </span><br><span class="line">STREAMING_JAR_PATH=/apps/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.0.0.jar</span><br><span class="line"> </span><br><span class="line">INPUT_FILE_PATH=&quot;hdfs://localhost:9000/input/wordcount/vehicle.txt&quot;</span><br><span class="line">OUTPUT_PATH=&quot;hdfs://localhost:9000/output/streaming/wordcount&quot;</span><br><span class="line"> </span><br><span class="line">if hadoop fs -test -d $OUTPUT_PATH</span><br><span class="line">then</span><br><span class="line">    hadoop fs -rm -r -skipTrash $OUTPUT_PATH</span><br><span class="line">fi</span><br><span class="line"> </span><br><span class="line">hadoop jar $STREAMING_JAR_PATH \</span><br><span class="line">-D mapred.job.name=&quot;WordCount&quot; \</span><br><span class="line">-file ~/hadoop_streaming/wordcount/mapper.py \</span><br><span class="line">-file ~/hadoop_streaming/wordcount/reducer.py \</span><br><span class="line">-input $INPUT_FILE_PATH \</span><br><span class="line">-output $OUTPUT_PATH \</span><br><span class="line">-mapper mapper.py \</span><br><span class="line">-reducer reducer.py \</span><br><span class="line">-cacheArchive &quot;hdfs://localhost:9000/py_modules/jieba.tar.gz#jieba&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/6U2dhq5EgMIwzyR.png" alt="image-20220929164103430"></p>
+<p>注意输入文件的路径为hdfs:&#x2F;&#x2F;localhost:9000&#x2F;input&#x2F;wordcount&#x2F;vehicle.txt，需要提前把vehicle.txt文件上传到HDFS。另外，为了区分本地路径和HDFS的路径，这里统一在HDFS的路径前加了地址hdfs:&#x2F;&#x2F;localhost:9000。</p>
+<p>vehicle.txt文件上传到HDFS</p>
+<p><img src="https://s2.loli.net/2022/09/29/wqbLgaIlVAkJYo7.png" alt="image-20220929165847677"></p>
+<ul>
+<li><strong>运行脚本</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash run.sh</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/WMXey9JL7HbdFln.png" alt="image-20220929183625653"></p>
+<p><img src="https://s2.loli.net/2022/09/29/KfBLYT32jMsag9u.png" alt="image-20220929183651477"></p>
+<p>出现以上信息显示成功完成并显示输出路径，说明job运行成功。就可以去HDFS查看结果了。</p>
+<ul>
+<li><strong>查看结果</strong></li>
+</ul>
+<p>使用下面的命令打印输出文件内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -cat /output/streaming/wordcount/*</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/Q6kJ9qi2tGa8Nl5.png" alt="image-20220929183736254"></p>
+<h1 id="三、任务失败日志查看方法"><a href="#三、任务失败日志查看方法" class="headerlink" title="三、任务失败日志查看方法"></a>三、任务失败日志查看方法</h1><p>在终端中，通过运行过程中的产生的日志信息可以获得任务ID。</p>
+<p><img src="https://s2.loli.net/2022/09/29/FeQI1aSAzxTVg5n.png" alt="image-20220929170219919"></p>
+<p>日志信息存在&#x2F;apps&#x2F;hadoop&#x2F;logs&#x2F;userlogs&#x2F;以job ID命名的目录中。</p>
+<p><img src="https://s2.loli.net/2022/09/29/U8N7Zd4GhqmYsF3.png" alt="image-20220929170406735"></p>
+<p>如果我们的任务运行失败，可以分别进入各个目录，查看其中的stderr文件，错误信息会显示在其中。</p>
+<p><img src="https://s2.loli.net/2022/09/29/MZsNibm4pOIuzJl.png" alt="image-20220929170536132"></p>
+<p>以streaming中文分词实验为例，我们将mapper.py中的导入jieba语句模块注释掉。</p>
+<p><img src="https://s2.loli.net/2022/09/29/6i9nRphLZAtaQlu.png" alt="image-20220929184114627"></p>
+<p>再次执行任务脚本，在终端中我们只能看到如下任务失败的日志，并不能获得详细信息。</p>
+<p><img src="https://s2.loli.net/2022/09/29/St9cJaIKiyOHjGs.png" alt="image-20220929184232065"></p>
+<p><img src="https://s2.loli.net/2022/09/29/cQSdGZVHgqxznAY.png" alt="image-20220929184253537"></p>
+<p>查看我们container日志文件，可以得到下图中信息错误原因，就是我们没有导入jieba模块造成的python不认识jieba这个名字</p>
+<p><img src="https://s2.loli.net/2022/09/29/izchSrGTo15IQ4B.png" alt="image-20220929184345758"></p>
+<p>修改后再次执行即可。</p>
+<h1 id="四、遇到的问题"><a href="#四、遇到的问题" class="headerlink" title="四、遇到的问题"></a>四、遇到的问题</h1><h3 id="1、下载jieba报错"><a href="#1、下载jieba报错" class="headerlink" title="1、下载jieba报错"></a>1、下载jieba报错</h3><p>遇到报错如下，连接超时，可能是原本的源速度太慢</p>
+<p><img src="https://s2.loli.net/2022/09/29/PwdQmiy9bVtk4qN.png" alt="image-20220929162855093"></p>
+<p>更换豆瓣源，</p>
+<p><img src="https://s2.loli.net/2022/09/29/8Ka5wtoQfZcHNsO.png" alt="image-20220929162906937"></p>
+<p>查看报错host不被信任，加上后缀–trusted-host</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install [whatyouwant] -i http:<span class="comment">//pypi.douban.com/simple --trusted-host pypi.douban.com</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/JINifQMpG9mdR5j.png" alt="image-20220929162918085"></p>
+<h3 id="2、报错显示内存不足"><a href="#2、报错显示内存不足" class="headerlink" title="2、报错显示内存不足"></a>2、报错显示内存不足</h3><p>报错如下，内存不足</p>
+<p><img src="https://s2.loli.net/2022/09/29/xpmg8CNWHdYLwXb.png" alt="image-20220929172004847"></p>
+<p><img src="https://s2.loli.net/2022/09/29/iO2XC9Z5yGI8Yob.png" alt="image-20220929171955544"></p>
+<p>解决方案：在&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;下的yarn-site.xml添加如下配置，提高虚拟内存比例</p>
+<p><img src="https://s2.loli.net/2022/09/29/vA6a4TuKcsiXE9d.png" alt="image-20220929171933432"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;</span><br><span class="line">    &lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;/name&gt;</span><br><span class="line">    &lt;value&gt;4&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/09/29/SpkcGJf6mwZTN5e.png" alt="image-20220929172523247"></p>
+<h4 id="内存不足未尝试解决方案"><a href="#内存不足未尝试解决方案" class="headerlink" title="内存不足未尝试解决方案"></a>内存不足未尝试解决方案</h4><h5 id="方案一："><a href="#方案一：" class="headerlink" title="方案一："></a>方案一：</h5><p>在mapred-site.xml 中添加如下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;</span><br><span class="line">    &lt;name&gt;mapreduce.map.memory.mb&lt;/name&gt;</span><br><span class="line">    &lt;value&gt;2048&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h5><p>在yarn-site.xml中添加如下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;</span><br><span class="line">    &lt;name&gt;yarn.nodemanager.pmem-check-enabled&lt;/name&gt;</span><br><span class="line">    &lt;value&gt;false&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">    &lt;name&gt;yarn.nodemanager.vmem-check-enabled&lt;/name&gt;</span><br><span class="line">    &lt;value&gt;false&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置是否启动一个线程检查每个任务正使用的物理内存量，如果任务超出分配值，则直接将其杀掉，默认是true。</li>
+<li>设置是否启动一个线程检查每个任务正使用的虚拟内存量，如果任务超出分配值，则直接将其杀掉，默认是true。</li>
+</ul>
+<h4 id="内存报错分析"><a href="#内存报错分析" class="headerlink" title="内存报错分析"></a>内存报错分析</h4><p><strong>物理内存</strong>：内存条提供的内存</p>
+<p><strong>虚拟内存</strong>：利用磁盘空间虚拟划出的一块逻辑内存，用作虚拟内存的磁盘空间被称为交换空间（Swap Space）。为了满足物理内存的不足而提出的策略。</p>
+<p>Linux系统会在物理内存不足时，使用交换分区的虚拟内存。内核会将暂时不用的内存块信息写到交换空间，这样以来，物理内存得到了释放，这块内存就可以用于其它目的，当需要用到原始的内容时，这些信息会被重新从交换空间读入物理内存。</p>
+<p><strong>MapReduce****配置参数</strong>：</p>
+<p>（1）mapreduce.map.memory.mb    </p>
+<p> 默认值：1024（MB），表示每个MapReduce作业的map任务可以申请的内存资源数量。</p>
+<p>（2）mapreduce.reduce.memory.mb<br>默认值：1024（MB），表示每个MapReduce作业的reduce任务可以申请的内存资源数量。</p>
+<p><strong>Yarn</strong> <strong>的配置参数</strong>：</p>
+<p>（1）yarn.nodemanager.resource.memory-mb</p>
+<p>表示该节点上YARN可使用的物理内存总量，默认是8192（MB），注意，如果你的节点内存资源不够8GB，则需要调减小这个值，而YARN不会智能的探测节点的物理内存总量。</p>
+<p>（2）yarn.nodemanager.vmem-pmem-ratio</p>
+<p>任务每使用1MB物理内存，最多可使用虚拟内存量，默认是2.1。</p>
+<p>（3） yarn.nodemanager.pmem-check-enabled</p>
+<p>是否启动一个线程检查每个任务正使用的物理内存量，如果任务超出分配值，则直接将其杀掉，默认是true。</p>
+<p>（4） yarn.nodemanager.vmem-check-enabled</p>
+<p>是否启动一个线程检查每个任务正使用的虚拟内存量，如果任务超出分配值，则直接将其杀掉，默认是true。</p>
+<p>（5）yarn.scheduler.minimum-allocation-mb</p>
+<p>单个任务可申请的最少物理内存量，默认是1024（MB），如果一个任务申请的物理内存量少于该值，则该对应的值改为这个数。</p>
+<p>（6）yarn.scheduler.maximum-allocation-mb</p>
+<p>单个任务可申请的最大物理内存量，默认是8192（MB）。</p>
+<p>默认情况下，YARN采用了线程监控的方法判断任务是否超量使用内存，一旦发现超量，则直接将其杀死。</p>
+<p>如果日志中出现以下错误：</p>
+<p><img src="https://s2.loli.net/2022/09/29/LHVNKpBrRbAcTvh.png" alt="image046-1-1024x158"></p>
+<p>各个数值的含义：</p>
+<ul>
+<li>1G为yarn.scheduler.minimum-allocation-mb的值或者它的整数倍，当yarn.scheduler.minimum-allocation-mb大于mapreduce.map.memory.mb的值则默认分配yarn.scheduler.minimum-allocation-mb，小于则取yarn.scheduler.minimum-allocation-mb的整数倍，最大不超过yarn.scheduler.maximum-allocation-mb 内存值，</li>
+<li>114.6MB为mr任务map Container实际占用的物理内存，</li>
+<li>2.1G为map Container默认分配的内存值乘以 yarn.nodemanager.vmem-pmem-ratio（默认2.1），</li>
+<li>2.4G为map Container任务实际占用的虚拟内存。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Pinzhuo Wu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2022/09/29/Hadoop%20Streaming/" title="Hadoop Streaming">http://example.com/2022/09/29/Hadoop Streaming/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag"># 大数据</a>
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/22/HDFS%20shell%E5%91%BD%E4%BB%A4/" rel="prev" title="HDFS shell命令">
+      <i class="fa fa-chevron-left"></i> HDFS shell命令
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81Hadoop-Streaming%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">一、Hadoop Streaming介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D"><span class="nav-number">2.</span> <span class="nav-text">二、中文分词</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1%E3%80%81%E5%87%86%E5%A4%87jieba%E5%88%86%E8%AF%8D%E5%8C%85"><span class="nav-number">2.0.0.0.0.1.</span> <span class="nav-text">1、准备jieba分词包</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%BB%E5%8A%A1%E5%A4%B1%E8%B4%A5%E6%97%A5%E5%BF%97%E6%9F%A5%E7%9C%8B%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">三、任务失败日志查看方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">四、遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E4%B8%8B%E8%BD%BDjieba%E6%8A%A5%E9%94%99"><span class="nav-number">4.0.1.</span> <span class="nav-text">1、下载jieba报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E6%8A%A5%E9%94%99%E6%98%BE%E7%A4%BA%E5%86%85%E5%AD%98%E4%B8%8D%E8%B6%B3"><span class="nav-number">4.0.2.</span> <span class="nav-text">2、报错显示内存不足</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%B8%8D%E8%B6%B3%E6%9C%AA%E5%B0%9D%E8%AF%95%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">4.0.2.1.</span> <span class="nav-text">内存不足未尝试解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A"><span class="nav-number">4.0.2.1.1.</span> <span class="nav-text">方案一：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C"><span class="nav-number">4.0.2.1.2.</span> <span class="nav-text">方案二</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%8A%A5%E9%94%99%E5%88%86%E6%9E%90"><span class="nav-number">4.0.2.2.</span> <span class="nav-text">内存报错分析</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Pinzhuo Wu"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Pinzhuo Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/PinzhuoWu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;PinzhuoWu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1452756537@qq.com" title="E-Mail → mailto:1452756537@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+	<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1478636&auto=1&height=66"></iframe>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PinzhuoWu</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">23k</span>
+
+
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
