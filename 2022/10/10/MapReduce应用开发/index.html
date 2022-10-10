@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-big-counter.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="使用Java开发MapReduce程序在Eclipse中开发MapReduce程序WordCount，来统计词频">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Github搭建hexo博客">
+<meta property="og:url" content="http://example.com/2022/10/10/MapReduce%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:site_name" content="PinzhuoWu&#39;Blog">
+<meta property="og:description" content="使用Java开发MapReduce程序在Eclipse中开发MapReduce程序WordCount，来统计词频">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/Pnx1wGOXl5yZ8L9.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/f1t3pXWjaM4ID8U.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/bAXGf3OTN1lsyFg.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/VLZHIMgDX3aly6G.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/k4Hm6KZuT9rBfYX.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/4WUuhRVzFbTKQfL.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/GtDhJjLUZyR8rzS.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/qn6BA2JPbeE9HmD.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/CepTRcs3J7hYqmG.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/s8fHoceUghqVmIA.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/wucvaZYhICHEktL.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/EsvdLwXVbnCDP7I.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/vzQlWGtq126w3xm.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/Z3UQHlhmiAyGr1s.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/LYio56fJ3hT2Aqd.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/1LEw8QHnhy63NMT.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/aFNylj2gAG3vus7.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/Hs27McvyTnUSLWF.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/m2Yc6RGr3pN8gDn.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/nuxdq2ElpWvZAXw.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/gUFjebC5aokur6z.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/mdWM7FJrp3q4lLz.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/4rQZg3Dy5aCP8BV.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/Otwg8YhS93DI2R6.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/vtkaGNOiuTxlceA.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/MSlo5U6O84bKDXy.png">
+<meta property="og:image" content="https://s2.loli.net/2022/10/06/glyQ3RsGht6mILb.png">
+<meta property="article:published_time" content="2022-10-10T05:46:51.674Z">
+<meta property="article:modified_time" content="2022-10-10T05:45:52.439Z">
+<meta property="article:author" content="Pinzhuo Wu">
+<meta property="article:tag" content="大数据">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Mapreduce">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/10/06/Pnx1wGOXl5yZ8L9.png">
+
+<link rel="canonical" href="http://example.com/2022/10/10/MapReduce%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>基于Github搭建hexo博客 | PinzhuoWu'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">PinzhuoWu'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录学习过程</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="comment fa-fw"></i>guestbook</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/10/MapReduce%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Pinzhuo Wu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PinzhuoWu'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于Github搭建hexo博客
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-10 13:46:51 / 修改时间：13:45:52" itemprop="dateCreated datePublished" datetime="2022-10-10T13:46:51+08:00">2022-10-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/Mapreduce/" itemprop="url" rel="index"><span itemprop="name">Mapreduce</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="使用Java开发MapReduce程序"><a href="#使用Java开发MapReduce程序" class="headerlink" title="使用Java开发MapReduce程序"></a>使用Java开发MapReduce程序</h1><p>在Eclipse中开发MapReduce程序WordCount，来统计词频</p>
+<span id="more"></span>
+
+<h3 id="准备数据文件"><a href="#准备数据文件" class="headerlink" title="准备数据文件"></a>准备数据文件</h3><p>在HDFS上创建文件夹&#x2F;input&#x2F;wordcount</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -mkdir -p /input/wordcount</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/10/06/Pnx1wGOXl5yZ8L9.png" alt="image-20221006131850830"></p>
+<p>在&#x2F;data目录下创建文件testfile，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /data/testfile</span><br></pre></td></tr></table></figure>
+
+<p>并写入以下内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hello big data</span><br><span class="line"></span><br><span class="line">hello hadoop</span><br><span class="line"></span><br><span class="line">hello hdfs</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/10/06/f1t3pXWjaM4ID8U.png" alt="image-20221006131922047"></p>
+<p>将&#x2F;data&#x2F;testfile上传到HDFS上的&#x2F;input&#x2F;wordcount目录。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -put /data/testfile /input/wordcount</span><br></pre></td></tr></table></figure>
+
+<p>我们统计文件&#x2F;input&#x2F;wordcount&#x2F;testfile出现的词的词频。</p>
+<h3 id="准备jar包"><a href="#准备jar包" class="headerlink" title="准备jar包"></a>准备jar包</h3><p>在~&#x2F;big_data_tools目录下创建文件夹hadoop3libs</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir ~/big_data_tools/hadoop3libs</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/10/06/bAXGf3OTN1lsyFg.png" alt="image-20221006132041912"></p>
+<p>将&#x2F;apps&#x2F;hadoop&#x2F;share&#x2F;hadoop目录下的common，hdfs，mapreduce，yarn 4个子目录中的jar文件以及这4个子目录下lib文件夹中的所有jar文件复制到hadoop3lib中。这些jar文件将作为外部的jar文件添加到统计词频的工程中。</p>
+<h3 id="完成代码"><a href="#完成代码" class="headerlink" title="完成代码"></a>完成代码</h3><p>创建Project【mr_example】，在项目中创建Package【sds.mapreduce】，然后创建Class【WordCount】，将在中间窗口中自动打开WordCount.java文件，删除其中的代码，将下面的代码复制其中并保存。</p>
+<p><img src="https://s2.loli.net/2022/10/06/VLZHIMgDX3aly6G.png" alt="image-20221006135329509"></p>
+<p><img src="https://s2.loli.net/2022/10/06/k4Hm6KZuT9rBfYX.png" alt="image-20221006135430407"></p>
+<p><img src="https://s2.loli.net/2022/10/06/4WUuhRVzFbTKQfL.png" alt="image-20221006135540942"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">package sds.mapreduce;</span><br><span class="line"> </span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.util.StringTokenizer;</span><br><span class="line"> </span><br><span class="line">import org.apache.hadoop.conf.Configuration;</span><br><span class="line">import org.apache.hadoop.fs.Path;</span><br><span class="line">import org.apache.hadoop.io.IntWritable;</span><br><span class="line">import org.apache.hadoop.io.Text;</span><br><span class="line">import org.apache.hadoop.mapreduce.Job;</span><br><span class="line">import org.apache.hadoop.mapreduce.Mapper;</span><br><span class="line">import org.apache.hadoop.mapreduce.Reducer;</span><br><span class="line">import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</span><br><span class="line">import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</span><br><span class="line">import org.apache.hadoop.util.GenericOptionsParser;</span><br><span class="line"> </span><br><span class="line">public class WordCount &#123;</span><br><span class="line"> </span><br><span class="line">    public static class TokenizerMapper extends Mapper&lt;Object, Text, Text, IntWritable&gt; &#123;</span><br><span class="line"> </span><br><span class="line">        private final static IntWritable one = new IntWritable(1);</span><br><span class="line">        private Text word = new Text(); </span><br><span class="line">        public void map(Object key, Text value, Context context) throws IOException, InterruptedException &#123;</span><br><span class="line">            StringTokenizer itr = new StringTokenizer(value.toString());</span><br><span class="line">            while (itr.hasMoreTokens()) &#123;</span><br><span class="line">                word.set(itr.nextToken());</span><br><span class="line">                context.write(word, one);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public static class IntSumReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt; &#123;</span><br><span class="line">        private IntWritable result = new IntWritable();</span><br><span class="line">         public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;</span><br><span class="line">            int sum = 0;</span><br><span class="line">            for (IntWritable val : values) &#123;</span><br><span class="line">                sum += val.get();</span><br><span class="line">            &#125;</span><br><span class="line">            result.set(sum);</span><br><span class="line">            context.write(key, result);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Configuration conf = new Configuration();</span><br><span class="line">        String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();</span><br><span class="line">        if (otherArgs.length &lt; 2) &#123;</span><br><span class="line">            System.err.println(&quot;Usage: wordcount &lt;in&gt; [&lt;in&gt;...] &lt;out&gt;&quot;);</span><br><span class="line">            System.exit(2);</span><br><span class="line">        &#125;</span><br><span class="line">        Job job = Job.getInstance(conf, &quot;word count&quot;);</span><br><span class="line">        job.setJarByClass(WordCount.class);</span><br><span class="line">        job.setMapperClass(TokenizerMapper.class);</span><br><span class="line">        job.setCombinerClass(IntSumReducer.class);</span><br><span class="line">        job.setReducerClass(IntSumReducer.class);</span><br><span class="line">        job.setOutputKeyClass(Text.class);</span><br><span class="line">        job.setOutputValueClass(IntWritable.class);</span><br><span class="line">        for (int i = 0; i &lt; otherArgs.length - 1; ++i) &#123;</span><br><span class="line">            FileInputFormat.addInputPath(job, new Path(otherArgs[i]));</span><br><span class="line">        &#125;</span><br><span class="line">        FileOutputFormat.setOutputPath(job, new Path(otherArgs[otherArgs.length - 1]));</span><br><span class="line">        System.exit(job.waitForCompletion(true) ? 0 : 1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加外部jar文件"><a href="#添加外部jar文件" class="headerlink" title="添加外部jar文件"></a>添加外部jar文件</h3><p>在Package Explorer工程名mr_example上点击右键，选择【Build Path】&#x3D;&gt;【Configure Build Path…】。</p>
+<p><img src="https://s2.loli.net/2022/10/06/GtDhJjLUZyR8rzS.png" alt="image-20221006135710159"></p>
+<p>在【Java Build Path】对话框中，选择【Libraries】标签，点击右侧的【Add External JARs…】按钮。</p>
+<p><img src="https://s2.loli.net/2022/10/06/qn6BA2JPbeE9HmD.png" alt="image-20221006135749119"></p>
+<p>在弹出的JAR文件选择窗口，切换到目录~&#x2F;big_data_tools&#x2F;hadoop3libs，全选目录中的JAR文件。点击【Open】。</p>
+<p><img src="https://s2.loli.net/2022/10/06/CepTRcs3J7hYqmG.png" alt="image-20221006143018404"></p>
+<p>回到【Java Build Path】对话框，点击【Apply and Close】，完成添加jar包。</p>
+<p><img src="https://s2.loli.net/2022/10/06/s8fHoceUghqVmIA.png" alt="image-20221006143047332"></p>
+<h3 id="运行代码"><a href="#运行代码" class="headerlink" title="运行代码"></a>运行代码</h3><p>因为代码中设置了从命令行获取参数，所以运行时，需要提供参数的值。在Eclipse中点击右键，选择【Run As】&#x3D;&gt;【Run Configurations…】，</p>
+<p><img src="https://s2.loli.net/2022/10/06/wucvaZYhICHEktL.png" alt="image-20221006143149331"></p>
+<p>在弹出的【Run configurations】对话框中，从左边的列表中选择我们要运行的Java Application 【WordCount】。然后在右边选择【Arguments】标签，在【Program arguments】中提供需要的参数值，也就是我们要统计词频的输入文件和存放结果的输出目录，各个参数用空格隔开。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs://localhost:9000/input/wordcount/testfile hdfs://localhost:9000/output/wordcount</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意如果输出目录在<strong><strong>HDFS</strong></strong>上已存在，需要先删除，否则会报错。</strong>这里HDFS上的地址需要写全，前面需要加上hdfs:&#x2F;&#x2F;localhost:9000&#x2F;。设置好以后点击【Run】。</p>
+<p>删除输出目录命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -rm -r /output/wordcount</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/10/06/EsvdLwXVbnCDP7I.png" alt="image-20221006143333958"></p>
+<p>运行结束以后，我们可以在【Project Explorer】中的【DFS Locations】中看到，在&#x2F;output目录下生成了子目录&#x2F;output&#x2F;wordcount，双击打开其中的文件part-r-00000，如果内容是我们预期的词频统计结果，说明我们程序运行成功。</p>
+<p><img src="https://s2.loli.net/2022/10/06/vzQlWGtq126w3xm.png" alt="image-20221006162144340"></p>
+<h1 id="Hadoop程序开发"><a href="#Hadoop程序开发" class="headerlink" title="Hadoop程序开发"></a>Hadoop程序开发</h1><p>本节练习Hadoop数据类型的用法，学习如何自定义Hadoop类并用这些类来编写MapReduce程序。</p>
+<h3 id="一、Hadoop数据类型"><a href="#一、Hadoop数据类型" class="headerlink" title="一、Hadoop数据类型"></a>一、Hadoop数据类型</h3><p>为了解决数据在集群节点之间传输的问题，Hadoop采用了Java中的序列化和反序列化概念。在Hadoop中，位于org.apache.hadoop.io包中的Writable接口是Hadoop序列化格式的实现。Writable接口实现了很多Hadoop数据类型，如表1所示，它们将Java的基本数据类型和一些常用的类（如字符串，数组，集合等）序列化，然后在节点之间传递，然后在目的地反序列化。</p>
+<table>
+<thead>
+<tr>
+<th><strong>数据类型</strong></th>
+<th><strong>Hadoop</strong>数据类型</th>
+<th><strong>Java数据类型</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>布尔型</td>
+<td>BooleanWritable</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>整型</td>
+<td>IntWritable</td>
+<td>int</td>
+</tr>
+<tr>
+<td>长整型</td>
+<td>LongWirteble</td>
+<td>long</td>
+</tr>
+<tr>
+<td>浮点数</td>
+<td>FloatWritable</td>
+<td>float</td>
+</tr>
+<tr>
+<td>双字节数值</td>
+<td>DoubleWritable</td>
+<td>double</td>
+</tr>
+<tr>
+<td>单字节数值</td>
+<td>ByteWritable</td>
+<td>byte</td>
+</tr>
+<tr>
+<td>使用UTF8格式存储的文本</td>
+<td>Text</td>
+<td>String</td>
+</tr>
+<tr>
+<td>数组</td>
+<td>ArrayWritable</td>
+<td>Array</td>
+</tr>
+<tr>
+<td>map集合</td>
+<td>MapWritable</td>
+<td>map</td>
+</tr>
+<tr>
+<td>空引用</td>
+<td>NullWritable</td>
+<td>null</td>
+</tr>
+</tbody></table>
+<p>表1 Hadoop和Java数据类型</p>
+<p>除char类型以外，每个Java基本类型的Writable封装，其类的内部都包含一个对应基本类型的成员变量value，get()和set()方法就是用来对该变量进行取值&#x2F;赋值操作的。这些类型都位于org.apache.hadoop.io包中。</p>
+<p>下面的例子演示了基本数据类型的使用，在项目【mr_example】的包【sds.mapreduce】中创建类【HadoopDataType】，删除其中的代码，将下面的代码复制其中并保存。运行并观察结果。模仿代码，探究其它数据类型的用法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">package sds.mapreduce;</span><br><span class="line"> </span><br><span class="line">import org.apache.hadoop.io.ArrayWritable;</span><br><span class="line">import org.apache.hadoop.io.IntWritable;</span><br><span class="line">import org.apache.hadoop.io.MapWritable;</span><br><span class="line">import org.apache.hadoop.io.NullWritable;</span><br><span class="line">import org.apache.hadoop.io.Text;</span><br><span class="line"> </span><br><span class="line">/** hadoop数据类型 */</span><br><span class="line">public class HadoopDataType &#123;</span><br><span class="line">    </span><br><span class="line">    /** 使用IntWritable */</span><br><span class="line">    public static void testIntWritable() &#123;</span><br><span class="line">        System.out.println(&quot;1. testIntWritable:&quot;);</span><br><span class="line">        IntWritable a = new IntWritable(10);</span><br><span class="line">        System.out.println(String.format(&quot;Value of a:%s&quot;, a.get()));</span><br><span class="line">        a.set(20);</span><br><span class="line">        System.out.println(String.format(&quot;New value of a:%s\n&quot;, a.get()));</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    /** 使用hadoop的Text类型数据 */</span><br><span class="line">    public static void testText() &#123;</span><br><span class="line">        System.out.println(&quot;2. testText:&quot;);</span><br><span class="line">        Text text = new Text(&quot;Hello Hadoop!&quot;);</span><br><span class="line">        System.out.println(text.toString());</span><br><span class="line">        System.out.println(String.format(&quot;Length of text:%d&quot;,text.getLength()));</span><br><span class="line">        System.out.println(String.format(&quot;Index of a:%d\n&quot;,text.find(&quot;a&quot;)));    </span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    /** 使用ArrayWritable */</span><br><span class="line">    public static void testArrayWritable() &#123;</span><br><span class="line">        System.out.println(&quot;3. testArrayWritable:&quot;);</span><br><span class="line">        ArrayWritable arr = new ArrayWritable(IntWritable.class);</span><br><span class="line">        IntWritable year = new IntWritable(2017);</span><br><span class="line">        IntWritable month = new IntWritable(07);</span><br><span class="line">        IntWritable date = new IntWritable(01);</span><br><span class="line">        arr.set(new IntWritable[] &#123; year, month, date &#125;);</span><br><span class="line">        System.out.println(String.format(&quot;year=%d,month=%d,date=%d\n&quot;,</span><br><span class="line">                ((IntWritable) arr.get()[0]).get(),</span><br><span class="line">                ((IntWritable) arr.get()[1]).get(),</span><br><span class="line">                ((IntWritable) arr.get()[2]).get()));</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    /** 使用MapWritable */</span><br><span class="line">    public static void testMapWritable() &#123;</span><br><span class="line">        System.out.println(&quot;4. testMapWritable:&quot;);</span><br><span class="line">        MapWritable map = new MapWritable();</span><br><span class="line">        Text k1 = new Text(&quot;name&quot;);</span><br><span class="line">        Text v1 = new Text(&quot;tonny&quot;);</span><br><span class="line">        Text k2 = new Text(&quot;password&quot;);</span><br><span class="line">        map.put(k1, v1);</span><br><span class="line">        map.put(k2, NullWritable.get());</span><br><span class="line">        System.out.println(String.format(&quot;Name is %s&quot;,map.get(k1).toString()));</span><br><span class="line">        System.out.println(String.format(&quot;Password is %s&quot;,map.get(k2).toString()));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"> </span><br><span class="line">        testIntWritable();</span><br><span class="line">        testText();</span><br><span class="line">        testArrayWritable();</span><br><span class="line">        testMapWritable();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下图所示</p>
+<p><img src="https://s2.loli.net/2022/10/06/Z3UQHlhmiAyGr1s.png" alt="image-20221006162745005"></p>
+<h3 id="二、自定义数据类型"><a href="#二、自定义数据类型" class="headerlink" title="二、自定义数据类型"></a>二、自定义数据类型</h3><p>一般自定义数据类型要实现Writable接口（实现其方法write()和readFields()），因为数据在网络传输或者进行永久性存储的时候，需要序列化和反序列化。如果该数据类型要作为主键使用或者要进行比较大小的操作，则要实现WritableComparable接口（实现其方法write()，readFields()和CompareTo() ）。</p>
+<p>步骤：</p>
+<p>（1）创建类实现WritableComparable或者Writable</p>
+<p>（2）根据需要定义属性，生成get&#x2F;set函数</p>
+<p>（3）构造函数：空参，带参数</p>
+<p>（4）序列化和反序列方法实现</p>
+<ul>
+<li>重写write方法并添加逻辑以写入所有字段值（就是调用基本类型的write方法）</li>
+<li>重写readFields方法从输入流读取所有字段值</li>
+</ul>
+<p>（5）重写compareTo方法并实现自定义数据类型排序的逻辑</p>
+<p>接下来创建一个类，实现矩形按面积升序排序。数据文件格式如下，两列分别为矩形的长和宽，保存到文件&#x2F;data&#x2F;Rectangle.txt中。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">9 9</span><br><span class="line"></span><br><span class="line">4 5</span><br><span class="line"></span><br><span class="line">7 8</span><br><span class="line"></span><br><span class="line">1 1</span><br><span class="line"></span><br><span class="line">3 6</span><br></pre></td></tr></table></figure>
+
+<p>在HDFS上创建目录&#x2F;input&#x2F;sort，并将数据文件上传其中。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -mkdir /input/sort</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -put /data/Rectangle.txt /input/sort</span><br></pre></td></tr></table></figure>
+
+<p>在项目【mr_example】的包【sds.mapreduce】中创建类【RectangleWritable】，将下面的代码复制其中并保存。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">package sds.mapreduce; </span><br><span class="line"> </span><br><span class="line">import java.io.DataInput;</span><br><span class="line">import java.io.DataOutput;</span><br><span class="line">import java.io.IOException;</span><br><span class="line"> </span><br><span class="line">import org.apache.hadoop.io.WritableComparable;</span><br><span class="line"> </span><br><span class="line">public class RectangleWritable implements WritableComparable &lt;RectangleWritable&gt; &#123;</span><br><span class="line"> </span><br><span class="line">    int length, width;</span><br><span class="line"> </span><br><span class="line">    public int getLength() &#123;</span><br><span class="line">        return length;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public void setLength(int length) &#123;</span><br><span class="line">        this.length = length;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public int getWidth() &#123;</span><br><span class="line">        return width;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public void setWidth(int width) &#123;</span><br><span class="line">        this.width = width;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public RectangleWritable() &#123;</span><br><span class="line">        super();</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public RectangleWritable(int length, int width) &#123;</span><br><span class="line">        super();</span><br><span class="line">        this.length = length;</span><br><span class="line">        this.width = width;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public void write(DataOutput out) throws IOException &#123;</span><br><span class="line">        out.writeInt(length);</span><br><span class="line">        out.writeInt(width);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public void readFields(DataInput in) throws IOException &#123;</span><br><span class="line">        this.length = in.readInt();</span><br><span class="line">        this.width = in.readInt();</span><br><span class="line"> </span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public int compareTo(RectangleWritable o) &#123;</span><br><span class="line">        if (this.getLength() * this.getWidth() &gt; o.getLength() * o.getWidth())</span><br><span class="line">            return 1;</span><br><span class="line">        if (this.getLength() * this.getWidth() &lt; o.getLength() * o.getWidth())</span><br><span class="line">            return -1;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="三、自定义分区函数"><a href="#三、自定义分区函数" class="headerlink" title="三、自定义分区函数"></a>三、自定义分区函数</h3><p>在项目【mr_example】的包【sds.mapreduce】中创建类【RectangleSort】，将下面的代码复制其中并保存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> sds.mapreduce;<span class="comment">//指明是在哪个包中</span></span><br><span class="line"> <span class="comment">//引入库</span></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.URI;</span><br><span class="line"><span class="keyword">import</span> java.net.URISyntaxException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.conf.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.fs.FileSystem;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.fs.Path;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.IntWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.LongWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.NullWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.Text;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Job;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Mapper;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Partitioner;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Reducer;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.lib.input.TextInputFormat;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;</span><br><span class="line"> <span class="comment">//定义自动排序的public类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RectangleSort</span> &#123;</span><br><span class="line"> <span class="comment">//规定输入路径和输出路径</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">INPUT_PATH</span> <span class="operator">=</span> <span class="string">&quot;hdfs://localhost:9000/input/sort/Rectangle.txt&quot;</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">OUTPUT_PATH</span> <span class="operator">=</span> <span class="string">&quot;hdfs://localhost:9000/output/rectangle&quot;</span>;</span><br><span class="line"> <span class="comment">//定义main函数</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable, URISyntaxException &#123;</span><br><span class="line"><span class="comment">//定义相关参数</span></span><br><span class="line">        <span class="type">Configuration</span> <span class="variable">conf</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Configuration</span>();</span><br><span class="line"><span class="comment">//将稳健的路径进行赋值</span></span><br><span class="line">        <span class="type">FileSystem</span> <span class="variable">fileSystem</span> <span class="operator">=</span> FileSystem.get(<span class="keyword">new</span> <span class="title class_">URI</span>(INPUT_PATH), conf);</span><br><span class="line">        <span class="type">Path</span> <span class="variable">outpath</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Path</span>(OUTPUT_PATH);</span><br><span class="line"><span class="comment">//如果输出路径已经存在，删除</span></span><br><span class="line">        <span class="keyword">if</span> (fileSystem.exists(outpath)) &#123;</span><br><span class="line">            fileSystem.delete(outpath, <span class="literal">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"> <span class="comment">//使用相应的class类来解决任务</span></span><br><span class="line">        <span class="type">Job</span> <span class="variable">job</span> <span class="operator">=</span> Job.getInstance(conf, <span class="string">&quot;RectangleSort&quot;</span>);</span><br><span class="line">        job.setJarByClass(RectangleSort.class);</span><br><span class="line">        job.setInputFormatClass(TextInputFormat.class);<span class="comment">//制定输入文件格式</span></span><br><span class="line">        job.setMapperClass(MyMapper.class);<span class="comment">//使用自己的map类</span></span><br><span class="line">        job.setMapOutputKeyClass(RectangleWritable.class);<span class="comment">//map输出的&lt;k,v&gt;类型，如果&lt;k3,v3&gt;的类型与&lt;k2,v2&gt;类型一致，则可以省略</span></span><br><span class="line">        job.setMapOutputValueClass(NullWritable.class);</span><br><span class="line">        job.setReducerClass(MyReducer.class);<span class="comment">//制定自己定义的reducer类</span></span><br><span class="line">        job.setOutputKeyClass(IntWritable.class);</span><br><span class="line">        <span class="comment">//设置map的输出格式</span></span><br><span class="line">        job.setOutputValueClass(IntWritable.class);</span><br><span class="line">        FileInputFormat.setInputPaths(job, INPUT_PATH);<span class="comment">//默认读取文件路径</span></span><br><span class="line">        FileOutputFormat.setOutputPath(job, <span class="keyword">new</span> <span class="title class_">Path</span>(OUTPUT_PATH));<span class="comment">//指定输出文件的格式</span></span><br><span class="line">        job.setOutputFormatClass(TextOutputFormat.class);<span class="comment">//输出文件</span></span><br><span class="line">        job.setPartitionerClass(MyPatitioner.class);</span><br><span class="line">        job.setNumReduceTasks(<span class="number">2</span>);<span class="comment">//指定两个reduce任务运行</span></span><br><span class="line">        job.waitForCompletion(<span class="literal">true</span>);<span class="comment">//把job提交给jobtracker运行</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//重新定义mapper类</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">MyMapper</span> <span class="keyword">extends</span> <span class="title class_">Mapper</span>&lt;LongWritable, Text, RectangleWritable, NullWritable&gt; &#123;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">map</span><span class="params">(LongWritable k1, Text v1, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException &#123;</span><br><span class="line">            String[] splites = v1.toString().split(<span class="string">&quot; &quot;</span>);<span class="comment">//分离</span></span><br><span class="line">            <span class="type">RectangleWritable</span> <span class="variable">k2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RectangleWritable</span>(</span><br><span class="line">                    Integer.parseInt(splites[<span class="number">0</span>]), Integer.parseInt(splites[<span class="number">1</span>]));</span><br><span class="line">            context.write(k2, NullWritable.get());<span class="comment">//保存结果</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">     <span class="comment">//定义reducer类</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">MyReducer</span> <span class="keyword">extends</span> <span class="title class_">Reducer</span>&lt;RectangleWritable, NullWritable, IntWritable, IntWritable&gt; &#123;</span><br><span class="line">        <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">reduce</span><span class="params">(RectangleWritable k2, Iterable&lt;NullWritable&gt; v2s,Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException &#123;</span><br><span class="line">            context.write(<span class="keyword">new</span> <span class="title class_">IntWritable</span>(k2.getLength()),<span class="comment">//写入结果</span></span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">IntWritable</span>(k2.getWidth()));</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyPatitioner</span> <span class="keyword">extends</span> <span class="title class_">Partitioner</span>&lt;RectangleWritable, NullWritable&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getPartition</span><span class="params">(RectangleWritable k2, NullWritable v2, <span class="type">int</span> numReduceTasks)</span> &#123;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (k2.getLength() == k2.getWidth()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">// 正方形在任务0中汇总</span></span><br><span class="line">        &#125; <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;<span class="comment">// 长方形在任务1中汇总</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+
+<p>运行代码回答以下问题：</p>
+<h5 id="Java泛型的用法"><a href="#Java泛型的用法" class="headerlink" title="Java泛型的用法"></a>Java泛型的用法</h5><p>声明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.普通的泛型方法</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; String <span class="title function_">commonMethod</span><span class="params">(String name,T t)</span>&#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">res</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    res += name +<span class="string">&quot;-&quot;</span>+ t;</span><br><span class="line">    System.out.println(<span class="string">&quot;普通泛型方法 ： &quot;</span>+res);</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    <span class="comment">//1.调用普通泛型方法</span></span><br><span class="line">    <span class="type">GenericMethod</span> <span class="variable">genericMethod</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GenericMethod</span>();</span><br><span class="line">    <span class="type">String</span> <span class="variable">commonRes01</span> <span class="operator">=</span> genericMethod.commonMethod(<span class="string">&quot;001&quot;</span>, <span class="string">&quot;bb&quot;</span>);</span><br><span class="line">    System.out.println(commonRes01);</span><br><span class="line">    <span class="type">String</span> <span class="variable">commonRes02</span> <span class="operator">=</span> genericMethod.commonMethod(<span class="string">&quot;002&quot;</span>, <span class="number">100</span>);</span><br><span class="line">    System.out.println(commonRes02);</span><br><span class="line">    <span class="type">String</span> <span class="variable">commonRes03</span> <span class="operator">=</span> genericMethod.commonMethod(<span class="string">&quot;003&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">    System.out.println(commonRes03);</span><br><span class="line">    System.out.println(<span class="string">&quot;==================&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>静态泛型方法<br>声明</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//2.静态的泛型方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T,E&gt; String <span class="title function_">staticMethod</span><span class="params">(String name,T t,E e)</span>&#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">res</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">        res += name +<span class="string">&quot;-&quot;</span>+ t +<span class="string">&quot;-&quot;</span>+ e;</span><br><span class="line">        System.out.println(<span class="string">&quot;静态泛型方法 ： &quot;</span>+res);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">     <span class="comment">//2.调用静态泛型方法</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">staticRes01</span> <span class="operator">=</span> GenericMethod.staticMethod(<span class="string">&quot;001&quot;</span>, <span class="string">&quot;aa&quot;</span>, <span class="string">&quot;bb&quot;</span>);</span><br><span class="line">    System.out.println(staticRes01);</span><br><span class="line">    <span class="type">String</span> <span class="variable">staticRes02</span> <span class="operator">=</span> GenericMethod.staticMethod(<span class="string">&quot;002&quot;</span>, <span class="number">100</span>, <span class="string">&#x27;c&#x27;</span>);</span><br><span class="line">    System.out.println(staticRes02);</span><br><span class="line">    <span class="type">String</span> <span class="variable">staticRes03</span> <span class="operator">=</span> GenericMethod.staticMethod(<span class="string">&quot;003&quot;</span>, <span class="number">12.05d</span>, <span class="literal">false</span>);</span><br><span class="line">    System.out.println(staticRes03);</span><br><span class="line">    System.out.println(<span class="string">&quot;==================&quot;</span>);</span><br><span class="line">   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>声明</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GenericMethod</span> &#123;</span><br><span class="line">    <span class="comment">//3.带可变参数的泛型方法</span></span><br><span class="line"><span class="keyword">public</span> &lt;A&gt; <span class="keyword">void</span> <span class="title function_">argsMethod</span><span class="params">(A ... args)</span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (A arg : args) &#123;</span><br><span class="line">        System.out.println(arg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GenericMethodApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">         <span class="comment">//3.调用可变参数的方法</span></span><br><span class="line">    genericMethod.argsMethod(<span class="number">1</span>,<span class="number">2</span>,<span class="number">300</span>,<span class="number">400</span>,<span class="number">500</span>,<span class="number">600</span>);</span><br><span class="line">    System.out.println(<span class="string">&quot;==================&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="解释分区函数"><a href="#解释分区函数" class="headerlink" title="解释分区函数"></a>解释分区函数</h5><p>在RectangleSort中规定了指定输出文件的格式化类分区和需要几个reducer类进行工作<br>在MyPatitioner中重新规定了分区，将正方形和长方形在任务0，1中进行了汇总</p>
+<h5 id="解释代码结果"><a href="#解释代码结果" class="headerlink" title="解释代码结果"></a>解释代码结果</h5><p>文件夹中有0、1两个文件，文件分别保存正方形和长方形。</p>
+<p><img src="https://s2.loli.net/2022/10/06/LYio56fJ3hT2Aqd.png" alt="image-20221006183414863"></p>
+<p><img src="https://s2.loli.net/2022/10/06/1LEw8QHnhy63NMT.png" alt="image-20221006183432155"></p>
+<h3 id="四、-命令行运行MapReduce程序"><a href="#四、-命令行运行MapReduce程序" class="headerlink" title="四、 命令行运行MapReduce程序"></a>四、 命令行运行MapReduce程序</h3><p>在Eclipse中运行MapReduce程序，是用本地的Hadoop类库来运行程序，并没有把jar包发送到Hadoop集群上去运行，所以Hadoop集群中不用启动YARN也可以运行，web管理页面（<a href="http://localhost:8088）也看不到作业信息。在集群中让程序分布式运行，需要把程序保存成jar包，用hadoop命令运行。">http://localhost:8088）也看不到作业信息。在集群中让程序分布式运行，需要把程序保存成jar包，用hadoop命令运行。</a></p>
+<h5 id="导出jar包"><a href="#导出jar包" class="headerlink" title="导出jar包"></a>导出jar包</h5><p>在自己家目录下创建~&#x2F;project_jar目录用于保存导出的jar包。在Eclipse【Project Explorer】中，右键点击Project 【mr_example】，选择【Export…】</p>
+<p><img src="https://s2.loli.net/2022/10/06/aFNylj2gAG3vus7.png" alt="image-20221006163515705"></p>
+<p>在弹出的【Export】对话框，选择【JAR file】，点击【Next】.</p>
+<p><img src="https://s2.loli.net/2022/10/06/Hs27McvyTnUSLWF.png" alt="image-20221006163543508"></p>
+<p>弹出【JAR Export】对话框，这里可以选择要导出的类以及设置保存目录。我们把导出目录设置为我们前面创建的目录<del>&#x2F;project_jar，其它选项保持默认值。点击【Finish】。可以在</del>&#x2F;project_jar 目录中看到导出的jar包mr_example.jar</p>
+<p><img src="https://s2.loli.net/2022/10/06/m2Yc6RGr3pN8gDn.png" alt="image-20221006164019206"></p>
+<h5 id="命令行运行"><a href="#命令行运行" class="headerlink" title="命令行运行"></a>命令行运行</h5><p>使用以下命令，在集群上运行MapReduce程序</p>
+<p>格式：</p>
+<p>hadoop jar jarFile [mainClass] [Args]</p>
+<ul>
+<li>jarFile：jar包</li>
+<li>mainClass：指定运行的主类</li>
+<li>Args：其它参数</li>
+</ul>
+<p>例如，运行WordCount，在终端中执行</p>
+<p>hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.WordCount &#x2F;input&#x2F;wordcount&#x2F;testfile &#x2F;output&#x2F;wordcount</p>
+<p>运行前检查一下，输出目录&#x2F;output&#x2F;wordcount是否已经存在，如果已经存在，需要先删除，否则会报错。</p>
+<p><img src="https://s2.loli.net/2022/10/06/nuxdq2ElpWvZAXw.png" alt="image-20221006164127943"></p>
+<p>如果显示以下信息，说明运行成功。</p>
+<p><img src="https://s2.loli.net/2022/10/06/gUFjebC5aokur6z.png" alt="image-20221006164114510"></p>
+<p>从上面的日志信息可以看出提交任务的id为application_1665033338967_0001。打开Hadoop Web界面<a target="_blank" rel="noopener" href="http://localhost:8088/">http://localhost:8088</a>，所有提交到集群的任务都在列表中，通过job id，我们知道第一个就是我们刚才提交的WordCount任务。</p>
+<p><img src="https://s2.loli.net/2022/10/06/mdWM7FJrp3q4lLz.png" alt="image-20221006164340683"></p>
+<p>在任务列表中，点击ID，可以查看任务的具体信息。</p>
+<p><img src="https://s2.loli.net/2022/10/06/4rQZg3Dy5aCP8BV.png" alt="image-20221006164449634"></p>
+<p>如果任务失败，可以在下方查看日志信息，查找错误原因。</p>
+<p><img src="https://s2.loli.net/2022/10/06/Otwg8YhS93DI2R6.png" alt="image-20221006164508456"></p>
+<p>在终端中执行以下命令，可以查看程序运行结果。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -cat /output/wordcount/*</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/10/06/vtkaGNOiuTxlceA.png" alt="image-20221006164535124"></p>
+<h5 id="练习：在命令行运行RectangleSort，并查看运行结果。"><a href="#练习：在命令行运行RectangleSort，并查看运行结果。" class="headerlink" title="练习：在命令行运行RectangleSort，并查看运行结果。"></a>练习：在命令行运行RectangleSort，并查看运行结果。</h5><p>在命令行运行如下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop jar ~/project_jar/mr_example.jar sds.mapreduce.RectangleSort /input/sort/Rectangle.txt hdfs://localhost:9000/output/rectangle</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/10/06/MSlo5U6O84bKDXy.png" alt="image-20221006183208589"></p>
+<p>运行结果如下：</p>
+<p><img src="https://s2.loli.net/2022/10/06/glyQ3RsGht6mILb.png" alt="image-20221006183321332"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Pinzhuo Wu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2022/10/10/MapReduce%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/" title="基于Github搭建hexo博客">http://example.com/2022/10/10/MapReduce应用开发/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag"># 大数据</a>
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Mapreduce/" rel="tag"># Mapreduce</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/05/%E5%9F%BA%E4%BA%8Egithub%E6%90%AD%E5%BB%BAhexo%E5%8D%9A%E5%AE%A2/" rel="prev" title="基于Github搭建hexo博客">
+      <i class="fa fa-chevron-left"></i> 基于Github搭建hexo博客
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Java%E5%BC%80%E5%8F%91MapReduce%E7%A8%8B%E5%BA%8F"><span class="nav-number">1.</span> <span class="nav-text">使用Java开发MapReduce程序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.0.1.</span> <span class="nav-text">准备数据文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87jar%E5%8C%85"><span class="nav-number">1.0.2.</span> <span class="nav-text">准备jar包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%8C%E6%88%90%E4%BB%A3%E7%A0%81"><span class="nav-number">1.0.3.</span> <span class="nav-text">完成代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%A4%96%E9%83%A8jar%E6%96%87%E4%BB%B6"><span class="nav-number">1.0.4.</span> <span class="nav-text">添加外部jar文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-number">1.0.5.</span> <span class="nav-text">运行代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hadoop%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91"><span class="nav-number">2.</span> <span class="nav-text">Hadoop程序开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81Hadoop%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.0.1.</span> <span class="nav-text">一、Hadoop数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.0.2.</span> <span class="nav-text">二、自定义数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E5%8C%BA%E5%87%BD%E6%95%B0"><span class="nav-number">2.0.3.</span> <span class="nav-text">三、自定义分区函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Java%E6%B3%9B%E5%9E%8B%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">2.0.3.0.1.</span> <span class="nav-text">Java泛型的用法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A7%A3%E9%87%8A%E5%88%86%E5%8C%BA%E5%87%BD%E6%95%B0"><span class="nav-number">2.0.3.0.2.</span> <span class="nav-text">解释分区函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A7%A3%E9%87%8A%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%9C"><span class="nav-number">2.0.3.0.3.</span> <span class="nav-text">解释代码结果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81-%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%BF%90%E8%A1%8CMapReduce%E7%A8%8B%E5%BA%8F"><span class="nav-number">2.0.4.</span> <span class="nav-text">四、 命令行运行MapReduce程序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%BC%E5%87%BAjar%E5%8C%85"><span class="nav-number">2.0.4.0.1.</span> <span class="nav-text">导出jar包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%BF%90%E8%A1%8C"><span class="nav-number">2.0.4.0.2.</span> <span class="nav-text">命令行运行</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E5%9C%A8%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%BF%90%E8%A1%8CRectangleSort%EF%BC%8C%E5%B9%B6%E6%9F%A5%E7%9C%8B%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C%E3%80%82"><span class="nav-number">2.0.4.0.3.</span> <span class="nav-text">练习：在命令行运行RectangleSort，并查看运行结果。</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Pinzhuo Wu"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Pinzhuo Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/PinzhuoWu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;PinzhuoWu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1452756537@qq.com" title="E-Mail → mailto:1452756537@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+	<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1478636&auto=1&height=66"></iframe>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PinzhuoWu</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">38k</span>
+
+
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
